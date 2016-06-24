@@ -65,7 +65,8 @@
             this.tsbDeleteEntity});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1278, 25);
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStrip1.Size = new System.Drawing.Size(1917, 32);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -76,39 +77,41 @@
             this.tsbCloseThisTab.Image = ((System.Drawing.Image)(resources.GetObject("tsbCloseThisTab.Image")));
             this.tsbCloseThisTab.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbCloseThisTab.Name = "tsbCloseThisTab";
-            this.tsbCloseThisTab.Size = new System.Drawing.Size(23, 22);
+            this.tsbCloseThisTab.Size = new System.Drawing.Size(28, 29);
             this.tsbCloseThisTab.Text = "Close this tab";
             this.tsbCloseThisTab.Click += new System.EventHandler(this.tsbCloseThisTab_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 32);
             // 
             // tsbLoadEntities
             // 
             this.tsbLoadEntities.Image = ((System.Drawing.Image)(resources.GetObject("tsbLoadEntities.Image")));
             this.tsbLoadEntities.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbLoadEntities.Name = "tsbLoadEntities";
-            this.tsbLoadEntities.Size = new System.Drawing.Size(94, 22);
+            this.tsbLoadEntities.Size = new System.Drawing.Size(140, 29);
             this.tsbLoadEntities.Text = "Load Entities";
             this.tsbLoadEntities.Click += new System.EventHandler(this.tsbLoadEntities_Click);
             // 
             // tsbCreateRecords
             // 
+            this.tsbCreateRecords.Enabled = false;
             this.tsbCreateRecords.Image = ((System.Drawing.Image)(resources.GetObject("tsbCreateRecords.Image")));
             this.tsbCreateRecords.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbCreateRecords.Name = "tsbCreateRecords";
-            this.tsbCreateRecords.Size = new System.Drawing.Size(228, 22);
+            this.tsbCreateRecords.Size = new System.Drawing.Size(345, 29);
             this.tsbCreateRecords.Text = "Create records for selected option sets";
             this.tsbCreateRecords.Click += new System.EventHandler(this.tsbCreateRecords_Click);
             // 
             // tsbDeleteEntity
             // 
+            this.tsbDeleteEntity.Enabled = false;
             this.tsbDeleteEntity.Image = ((System.Drawing.Image)(resources.GetObject("tsbDeleteEntity.Image")));
             this.tsbDeleteEntity.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbDeleteEntity.Name = "tsbDeleteEntity";
-            this.tsbDeleteEntity.Size = new System.Drawing.Size(223, 22);
+            this.tsbDeleteEntity.Size = new System.Drawing.Size(334, 29);
             this.tsbDeleteEntity.Text = "Delete PowerBi Option-set Xref Entity";
             this.tsbDeleteEntity.ToolTipText = "Delete PowerBi Option-set Xref Entity from the connect organization";
             this.tsbDeleteEntity.Click += new System.EventHandler(this.tsbDeleteEntity_Click);
@@ -116,7 +119,8 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 32);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -128,8 +132,9 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lvOptionSets);
             this.splitContainer1.Panel2.Controls.Add(this.panel2);
-            this.splitContainer1.Size = new System.Drawing.Size(1278, 775);
-            this.splitContainer1.SplitterDistance = 426;
+            this.splitContainer1.Size = new System.Drawing.Size(1917, 1199);
+            this.splitContainer1.SplitterDistance = 639;
+            this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 1;
             // 
             // lvEntities
@@ -139,9 +144,10 @@
             this.columnHeader1,
             this.columnHeader2});
             this.lvEntities.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvEntities.Location = new System.Drawing.Point(0, 26);
+            this.lvEntities.Location = new System.Drawing.Point(0, 40);
+            this.lvEntities.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lvEntities.Name = "lvEntities";
-            this.lvEntities.Size = new System.Drawing.Size(426, 749);
+            this.lvEntities.Size = new System.Drawing.Size(639, 1159);
             this.lvEntities.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvEntities.TabIndex = 3;
             this.lvEntities.UseCompatibleStateImageBehavior = false;
@@ -163,8 +169,9 @@
             // 
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(426, 26);
+            this.panel1.Size = new System.Drawing.Size(639, 40);
             this.panel1.TabIndex = 2;
             // 
             // lvOptionSets
@@ -175,9 +182,10 @@
             this.columnHeader4,
             this.columnHeader5});
             this.lvOptionSets.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvOptionSets.Location = new System.Drawing.Point(0, 26);
+            this.lvOptionSets.Location = new System.Drawing.Point(0, 40);
+            this.lvOptionSets.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lvOptionSets.Name = "lvOptionSets";
-            this.lvOptionSets.Size = new System.Drawing.Size(848, 749);
+            this.lvOptionSets.Size = new System.Drawing.Size(1272, 1159);
             this.lvOptionSets.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvOptionSets.TabIndex = 5;
             this.lvOptionSets.UseCompatibleStateImageBehavior = false;
@@ -205,16 +213,18 @@
             this.panel2.Controls.Add(this.llSelectAllOptionSet);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(848, 26);
+            this.panel2.Size = new System.Drawing.Size(1272, 40);
             this.panel2.TabIndex = 4;
             // 
             // llSelectNoOptionSet
             // 
             this.llSelectNoOptionSet.AutoSize = true;
-            this.llSelectNoOptionSet.Location = new System.Drawing.Point(61, 4);
+            this.llSelectNoOptionSet.Location = new System.Drawing.Point(92, 6);
+            this.llSelectNoOptionSet.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.llSelectNoOptionSet.Name = "llSelectNoOptionSet";
-            this.llSelectNoOptionSet.Size = new System.Drawing.Size(64, 13);
+            this.llSelectNoOptionSet.Size = new System.Drawing.Size(94, 20);
             this.llSelectNoOptionSet.TabIndex = 1;
             this.llSelectNoOptionSet.TabStop = true;
             this.llSelectNoOptionSet.Text = "Select none";
@@ -223,9 +233,10 @@
             // llSelectAllOptionSet
             // 
             this.llSelectAllOptionSet.AutoSize = true;
-            this.llSelectAllOptionSet.Location = new System.Drawing.Point(4, 4);
+            this.llSelectAllOptionSet.Location = new System.Drawing.Point(6, 6);
+            this.llSelectAllOptionSet.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.llSelectAllOptionSet.Name = "llSelectAllOptionSet";
-            this.llSelectAllOptionSet.Size = new System.Drawing.Size(50, 13);
+            this.llSelectAllOptionSet.Size = new System.Drawing.Size(73, 20);
             this.llSelectAllOptionSet.TabIndex = 0;
             this.llSelectAllOptionSet.TabStop = true;
             this.llSelectAllOptionSet.Text = "Select all";
@@ -233,12 +244,13 @@
             // 
             // PluginControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "PluginControl";
-            this.Size = new System.Drawing.Size(1278, 800);
+            this.Size = new System.Drawing.Size(1917, 1231);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);

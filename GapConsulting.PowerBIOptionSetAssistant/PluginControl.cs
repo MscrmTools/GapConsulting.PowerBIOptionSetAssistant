@@ -145,7 +145,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                     lvEntities.Items.AddRange(list.ToArray());
 
                     tsbCreateRecords.Enabled = true;
-                    tsbDeleteEntity.Enabled = true;
+                    tsbDeleteEntity.Enabled = emc.ToList().FirstOrDefault(emd=>emd.LogicalName == "gap_powerbioptionsetref") != null;
                     tsbLoadEntities.Enabled = true;
                 }
             });
