@@ -15,7 +15,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
     {
         private EntityMetadataCollection emc;
 
-        private List<Tuple<string, string>> selectedOptionSets;
+        private readonly List<Tuple<string, string>> selectedOptionSets;
 
         public PluginControl()
         {
@@ -127,9 +127,10 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                     var list = new List<ListViewItem>();
 
                     foreach (var em in emc.Where(e => e.Attributes.Any(
-                        a => a.AttributeType.Value == AttributeTypeCode.Picklist
-                             || a.AttributeType.Value == AttributeTypeCode.State
-                             || a.AttributeType.Value == AttributeTypeCode.Status)))
+                        a => a.AttributeType.HasValue && a.AttributeType.Value == AttributeTypeCode.Picklist
+                             || a.AttributeType.HasValue && a.AttributeType.Value == AttributeTypeCode.Boolean
+                             || a.AttributeType.HasValue && a.AttributeType.Value == AttributeTypeCode.State
+                             || a.AttributeType.HasValue && a.AttributeType.Value == AttributeTypeCode.Status)))
                     {
                         var item =
                             new ListViewItem(em.DisplayName == null || em.DisplayName.UserLocalizedLabel == null
@@ -155,7 +156,17 @@ namespace GapConsulting.PowerBIOptionSetAssistant
         {
             foreach (var optionSet in settings.OptionSets)
             {
-                OptionMetadataCollection omc = null;
+                if (optionSet.AttributeType.HasValue && optionSet.AttributeType.Value == AttributeTypeCode.Boolean)
+                {
+                    var bamd = (BooleanAttributeMetadata) optionSet;
+
+                    CreateRecordForOption(optionSet, bamd.OptionSet.TrueOption, settings);
+                    CreateRecordForOption(optionSet, bamd.OptionSet.FalseOption, settings);
+
+                    continue;
+                }
+
+                OptionMetadataCollection omc;
 
                 if (optionSet is PicklistAttributeMetadata)
                 {
@@ -172,45 +183,51 @@ namespace GapConsulting.PowerBIOptionSetAssistant
 
                 foreach (OptionMetadata option in omc)
                 {
-                    foreach (LocalizedLabel label in option.Label.LocalizedLabels)
+                    CreateRecordForOption(optionSet, option, settings);
+                }
+            }
+        }
+
+        private void CreateRecordForOption(AttributeMetadata optionSet, OptionMetadata option, Settings settings)
+        {
+            foreach (LocalizedLabel label in option.Label.LocalizedLabels)
+            {
+                bool exists = true;
+                // ReSharper disable once PossibleInvalidOperationException
+                var record = GetRecord(settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).SchemaName, optionSet.SchemaName, option.Value.Value, label.LanguageCode);
+                if (record == null)
+                {
+                    record = new Entity("gap_powerbioptionsetref");
+                    exists = false;
+                }
+                else
+                {
+                    // The label did not change, no need to update
+                    if (record.GetAttributeValue<string>("gap_label") == label.Label)
                     {
-                        bool exists = true;
-                        var record = GetRecord(settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).SchemaName, optionSet.SchemaName, option.Value.Value, label.LanguageCode);
-                        if (record == null)
-                        {
-                            record = new Entity("gap_powerbioptionsetref");
-                            exists = false;
-                        }
-                        else
-                        {
-                            // The label did not change, no need to update
-                            if (record.GetAttributeValue<string>("gap_label") == label.Label)
-                            {
-                                continue;
-                            }
-                        }
-
-                        record["gap_entityname"] = settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).DisplayName.UserLocalizedLabel.Label;
-                        record["gap_entityschemaname"] = settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).SchemaName;
-                        record["gap_optionsetschemaname"] = optionSet.SchemaName;
-                        record["gap_value"] = option.Value;
-                        record["gap_language"] = label.LanguageCode;
-                        record["gap_label"] = label.Label;
-
-                        if (exists)
-                        {
-                            Service.Update(record);
-                        }
-                        else
-                        {
-                            Service.Create(record);
-                        }
-
-                        if (selectedOptionSets.FirstOrDefault(so => so.Item1 == record.GetAttributeValue<string>("gap_entityschemaname") && so.Item2 == record.GetAttributeValue<string>("gap_optionsetschemaname")) == null)
-                        {
-                            selectedOptionSets.Add(new Tuple<string, string>(record.GetAttributeValue<string>("gap_entityschemaname"), record.GetAttributeValue<string>("gap_optionsetschemaname")));
-                        }
+                        continue;
                     }
+                }
+
+                record["gap_entityname"] = settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).DisplayName.UserLocalizedLabel.Label;
+                record["gap_entityschemaname"] = settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).SchemaName;
+                record["gap_optionsetschemaname"] = optionSet.SchemaName;
+                record["gap_value"] = option.Value;
+                record["gap_language"] = label.LanguageCode;
+                record["gap_label"] = label.Label;
+
+                if (exists)
+                {
+                    Service.Update(record);
+                }
+                else
+                {
+                    Service.Create(record);
+                }
+
+                if (selectedOptionSets.FirstOrDefault(so => so.Item1 == record.GetAttributeValue<string>("gap_entityschemaname") && so.Item2 == record.GetAttributeValue<string>("gap_optionsetschemaname")) == null)
+                {
+                    selectedOptionSets.Add(new Tuple<string, string>(record.GetAttributeValue<string>("gap_entityschemaname"), record.GetAttributeValue<string>("gap_optionsetschemaname")));
                 }
             }
         }
@@ -272,9 +289,9 @@ namespace GapConsulting.PowerBIOptionSetAssistant
             {
                 foreach (var attr in emd.Attributes)
                 {
-                    var item = new ListViewItem(attr.DisplayName.UserLocalizedLabel.Label);
+                    var item = new ListViewItem(attr.DisplayName?.UserLocalizedLabel?.Label ?? "N/A");
                     item.SubItems.Add(attr.LogicalName);
-                    item.SubItems.Add(emd.DisplayName.UserLocalizedLabel.Label);
+                    item.SubItems.Add(emd.DisplayName?.UserLocalizedLabel?.Label ?? "N/A");
                     item.Name = emd.LogicalName + attr.LogicalName;
                     item.Tag = attr;
                     item.Checked = selectedOptionSets.Any(so => so.Item2 == attr.SchemaName);

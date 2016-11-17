@@ -65,7 +65,6 @@ namespace GapConsulting.PowerBIOptionSetAssistant.AppCode
                 {
                     Conditions =
                    {
-                       //new MetadataConditionExpression("IsCustomEntity", MetadataConditionOperator.Equals, true),
                        new MetadataConditionExpression("IsIntersect", MetadataConditionOperator.Equals, false)
                    }
                 },
@@ -84,6 +83,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant.AppCode
                         Conditions =
                        {
                            new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.Picklist),
+                           new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.Boolean),
                            new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.State),
                            new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.Status)
                        }
