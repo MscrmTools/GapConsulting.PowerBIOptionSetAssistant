@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Microsoft.Xrm.Sdk.Messages;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Interfaces;
 
@@ -185,9 +186,13 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                 {
                     CreateRecordForOption(optionSet, option, settings);
                 }
-            }
-        }
 
+                CleanOption(optionSet, omc, settings);
+            }
+
+            CleanOptions(settings);
+        }
+      
         private void CreateRecordForOption(AttributeMetadata optionSet, OptionMetadata option, Settings settings)
         {
             foreach (LocalizedLabel label in option.Label.LocalizedLabels)
@@ -230,6 +235,92 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                     selectedOptionSets.Add(new Tuple<string, string>(record.GetAttributeValue<string>("gap_entityschemaname"), record.GetAttributeValue<string>("gap_optionsetschemaname")));
                 }
             }
+        }
+
+        /// <summary>
+        /// Remove optionSet values no longer existing in application
+        /// </summary>
+        /// <param name="optionSet">OptionSet to clean</param>
+        /// <param name="omc">List of all optionsets</param>
+        /// <param name="settings">Settings for optionSets sync</param>
+        private void CleanOption(AttributeMetadata optionSet, OptionMetadataCollection omc, Settings settings)
+        {
+            var schemaName = settings.AllMetadata.First(e => e.LogicalName == optionSet.EntityLogicalName).SchemaName;
+
+            var existingOptions = Service.RetrieveMultiple(new QueryExpression("gap_powerbioptionsetref")
+            {
+                NoLock = true,
+                ColumnSet = new ColumnSet("gap_value"),
+                Criteria = new FilterExpression
+                {
+                    Conditions =
+                    {
+                        new ConditionExpression("gap_entityschemaname", ConditionOperator.Equal, schemaName),
+                        new ConditionExpression("gap_optionsetschemaname", ConditionOperator.Equal, optionSet.SchemaName),
+                    }
+                }
+            }).Entities;
+
+            var bulkDeleteRequest = new ExecuteMultipleRequest
+            {
+                Settings = new ExecuteMultipleSettings
+                {
+                    ContinueOnError = true,
+                    ReturnResponses = false
+                },
+                Requests = new OrganizationRequestCollection()
+            };
+
+            foreach (var record in existingOptions)
+            {
+                if (omc.Any(o => o.Value.HasValue && o.Value.Value == record.GetAttributeValue<int>("gap_value")))
+                {
+                    continue;
+                }
+
+                bulkDeleteRequest.Requests.Add(new DeleteRequest { Target = record.ToEntityReference() });
+            }
+
+            Service.Execute(bulkDeleteRequest);
+        }
+
+        /// <summary>
+        /// Remove records for optionSets no longer selected
+        /// </summary>
+        /// <param name="settings">Settings for optionSets sync</param>
+        private void CleanOptions(Settings settings)
+        {
+            var existingOptions = Service.RetrieveMultiple(new QueryExpression("gap_powerbioptionsetref")
+            {
+                NoLock = true,
+                ColumnSet = new ColumnSet("gap_entityschemaname", "gap_optionsetschemaname"),
+            }).Entities;
+
+            var bulkDeleteRequest = new ExecuteMultipleRequest
+            {
+                Settings = new ExecuteMultipleSettings
+                {
+                    ContinueOnError = true,
+                    ReturnResponses = false
+                },
+                Requests = new OrganizationRequestCollection()
+            };
+
+            foreach (var record in existingOptions)
+            {
+                var logicalName = record.GetAttributeValue<string>("gap_entityschemaname").ToLower();
+                var optSchemaName = record.GetAttributeValue<string>("gap_optionsetschemaname");
+
+                var optionSet = settings.OptionSets.FirstOrDefault(
+                    o => o.EntityLogicalName == logicalName && o.SchemaName == optSchemaName);
+
+                if (optionSet == null)
+                {
+                    bulkDeleteRequest.Requests.Add(new DeleteRequest { Target = record.ToEntityReference() });
+                }
+            }
+
+            Service.Execute(bulkDeleteRequest);
         }
 
         private Entity GetRecord(string entitySchemaName, string schemaName, int value, int languageCode)
