@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("GapConsulting.PowerBIOptionSetAssistant")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("MscrmTools for Gap Consulting")]
+[assembly: AssemblyCompany("MscrmTools for Incremental Group")]
 [assembly: AssemblyProduct("Power BI OptionSet Assistant")]
 [assembly: AssemblyCopyright("Copyright ©MscrmTools 2015")]
 [assembly: AssemblyTrademark("")]
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de build et de révision par défaut
 // en utilisant '*', comme indiqué ci-dessous :
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2017.1.2")]
-[assembly: AssemblyFileVersion("1.2017.1.2")]
+[assembly: AssemblyVersion("1.2018.6.3")]
+[assembly: AssemblyFileVersion("1.2018.6.3")]
