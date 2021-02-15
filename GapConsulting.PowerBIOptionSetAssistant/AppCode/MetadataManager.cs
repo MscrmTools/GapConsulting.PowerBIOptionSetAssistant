@@ -1,5 +1,5 @@
-﻿using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Client;
+﻿using Microsoft.Crm.Sdk.Messages;
+using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Metadata.Query;
@@ -82,6 +82,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant.AppCode
                         FilterOperator = LogicalOperator.Or,
                         Conditions =
                        {
+                           new MetadataConditionExpression("AttributeTypeName", MetadataConditionOperator.Equals, AttributeTypeDisplayName.MultiSelectPicklistType),
                            new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.Picklist),
                            new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.Boolean),
                            new MetadataConditionExpression("AttributeType", MetadataConditionOperator.Equals, AttributeTypeCode.State),
@@ -122,7 +123,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant.AppCode
                     DisplayName = new Label("Power BI Option-Set Xref", lcid),
                     DisplayCollectionName = new Label("Power BI Option-Set Xrefs", lcid),
                     Description = new Label("Created automatically by Power BI Option-Set Xref XrmToolBox plugin", lcid),
-                    OwnershipType = OwnershipTypes.OrganizationOwned,                    
+                    OwnershipType = OwnershipTypes.OrganizationOwned,
                 };
 
                 var pamd = new StringAttributeMetadata
@@ -269,6 +270,16 @@ namespace GapConsulting.PowerBIOptionSetAssistant.AppCode
                         FormatName = StringFormatName.Url,
                         DisplayName = new Label("Option Image Url", lcid),
                     }
+                });
+
+                if (bw != null && bw.WorkerReportsProgress)
+                {
+                    bw.ReportProgress(0, "Publishing entity...");
+                }
+
+                service.Execute(new PublishXmlRequest
+                {
+                    ParameterXml = "<importexportxml><entities><entity>gap_powerbioptionsetref</entity></entities></importexportxml>"
                 });
             }
             catch (Exception)

@@ -1,12 +1,12 @@
 ﻿using GapConsulting.PowerBIOptionSetAssistant.AppCode;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.Xrm.Sdk.Messages;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Interfaces;
 
@@ -147,7 +147,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                     lvEntities.Items.AddRange(list.ToArray());
 
                     tsbCreateRecords.Enabled = true;
-                    tsbDeleteEntity.Enabled = emc.ToList().FirstOrDefault(emd=>emd.LogicalName == "gap_powerbioptionsetref") != null;
+                    tsbDeleteEntity.Enabled = emc.ToList().FirstOrDefault(emd => emd.LogicalName == "gap_powerbioptionsetref") != null;
                     tsbLoadEntities.Enabled = true;
                 }
             });
@@ -159,7 +159,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
             {
                 if (optionSet.AttributeType.HasValue && optionSet.AttributeType.Value == AttributeTypeCode.Boolean)
                 {
-                    var bamd = (BooleanAttributeMetadata) optionSet;
+                    var bamd = (BooleanAttributeMetadata)optionSet;
 
                     CreateRecordForOption(optionSet, bamd.OptionSet.TrueOption, settings);
                     CreateRecordForOption(optionSet, bamd.OptionSet.FalseOption, settings);
@@ -172,6 +172,10 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                 if (optionSet is PicklistAttributeMetadata)
                 {
                     omc = ((PicklistAttributeMetadata)optionSet).OptionSet.Options;
+                }
+                else if (optionSet is MultiSelectPicklistAttributeMetadata)
+                {
+                    omc = ((MultiSelectPicklistAttributeMetadata)optionSet).OptionSet.Options;
                 }
                 else if (optionSet is StateAttributeMetadata)
                 {
@@ -192,7 +196,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
 
             CleanOptions(settings);
         }
-      
+
         private void CreateRecordForOption(AttributeMetadata optionSet, OptionMetadata option, Settings settings)
         {
             foreach (LocalizedLabel label in option.Label.LocalizedLabels)
@@ -352,7 +356,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
         private void Listview_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             var lv = (ListView)sender;
-            lv.Sorting = lvEntities.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+            lv.Sorting = lv.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
             lv.ListViewItemSorter = new ListViewItemComparer(e.Column, lv.Sorting);
         }
 
@@ -378,7 +382,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
 
             if (e.Item.Checked)
             {
-                foreach (var attr in emd.Attributes)
+                foreach (var attr in emd.Attributes.Where(a => a.AttributeTypeName != AttributeTypeDisplayName.VirtualType))
                 {
                     var item = new ListViewItem(attr.DisplayName?.UserLocalizedLabel?.Label ?? "N/A");
                     item.SubItems.Add(attr.LogicalName);
@@ -454,7 +458,7 @@ namespace GapConsulting.PowerBIOptionSetAssistant
                 },
                 PostWorkCallBack = evt =>
                 {
-                    if(evt.Error != null)
+                    if (evt.Error != null)
                     {
                         MessageBox.Show(this, "An error ocurred while creating record(s): " + evt.Error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
